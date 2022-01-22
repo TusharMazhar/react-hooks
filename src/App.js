@@ -1,8 +1,9 @@
 import './App.css';
 
-import { useState, useReducer, useEffect,useLayoutEffect, useRef} from 'react'
+import { useState, useReducer, useEffect,useLayoutEffect, useRef, createContext} from 'react'
 import axios from 'axios'
-
+import Toggle from './componets/Child'
+export const AppData = createContext(null)
 const reducer = (state,action)=>{
    switch(action.type){
       case "INCREMRENT":
@@ -36,16 +37,16 @@ const App  =()=>{
 
   const [state,dispatch] = useReducer(reducer,{count:100})
 
-  // useLayoutEffect Works before rendering page
+  //useLayoutEffect Works before rendering page
   useLayoutEffect(()=>{
     console.log('useLayoutEffect')
   },[])
 
   // usEffect Works after rendering page
-  useEffect(async()=>{
-     const todo = await axios.get('https://jsonplaceholder.typicode.com/todos/')
-     console.log(todo.data[0].title)
-     setInputValue(todo.data[0].title)
+  useEffect(()=>{
+     axios.get('https://jsonplaceholder.typicode.com/todos/').then(res=>{
+      setInputValue(res.data[0].title)
+     })
   },[])
 
   
@@ -55,6 +56,10 @@ const App  =()=>{
     inputRef.current.focus()
     inputRef.current.value = ""
   }
+
+  const buttonRef = useRef(null)
+
+  
 
   return (
     <div className="App">
@@ -95,6 +100,10 @@ const App  =()=>{
           <input type='text' ref={inputRef}/>
         </div>
       </div>
+      <AppData.Provider value={{counter, inputValue}}>
+        <p onClick={()=>{buttonRef.current.toggler()}}>Click</p>
+        <Toggle ref={buttonRef} />
+      </AppData.Provider>
     </div>
   );
 }
