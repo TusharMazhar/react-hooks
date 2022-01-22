@@ -1,6 +1,7 @@
 import './App.css';
 
-import { useState, useReducer} from 'react'
+import { useState, useReducer, useEffect,useLayoutEffect, useRef} from 'react'
+import axios from 'axios'
 
 const reducer = (state,action)=>{
    switch(action.type){
@@ -34,6 +35,27 @@ const App  =()=>{
   }
 
   const [state,dispatch] = useReducer(reducer,{count:100})
+
+  // useLayoutEffect Works before rendering page
+  useLayoutEffect(()=>{
+    console.log('useLayoutEffect')
+  },[])
+
+  // usEffect Works after rendering page
+  useEffect(async()=>{
+     const todo = await axios.get('https://jsonplaceholder.typicode.com/todos/')
+     console.log(todo.data[0].title)
+     setInputValue(todo.data[0].title)
+  },[])
+
+  
+  const inputRef = useRef(null)
+
+  const onClick = (e)=>{
+    inputRef.current.focus()
+    inputRef.current.value = ""
+  }
+
   return (
     <div className="App">
       <div>
@@ -63,6 +85,14 @@ const App  =()=>{
         </div>
         <div>
           {inputValue}
+        </div>
+      </div>
+      <div>
+        <div>
+           <button className="btn1" onClick={onClick}>Button</button>
+        </div>
+        <div>
+          <input type='text' ref={inputRef}/>
         </div>
       </div>
     </div>
